@@ -158,4 +158,30 @@ describe('globalDispatch:', () => {
     expect(store1.getState().count).toBe(1)
     expect(store2.getState().count).toBe(5)
   })
+
+  test('should have rootState available from global dispatch effect', async () => {
+    const { dispatch } = require('../src')
+
+    let rootState
+    const store1 = init({
+      models: {
+        count: {
+          state: 42,
+          reducers: {
+            add(state, payload) {
+              return payload + 1
+            }
+          },
+          effects: {
+            async addAsync(payload, state) {
+              rootState = state
+            }
+          }
+        }
+      }
+    })
+
+    await dispatch.count.addAsync()
+    expect(rootState).toEqual({ count: 42 })
+  })
 })
